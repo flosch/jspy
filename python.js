@@ -26,8 +26,14 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
     THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-    Not finished yet! Missing a lot of things. Not well documented yet, will
-    finish this later.
+
+    - Not finished yet! Missing a lot of things. Not well documented yet, will
+      finish this later.
+    
+    - Currently working on generators; therefore this python.js version is 
+      currently broken and will not work as expected. You can find the latest
+      working version at http://dl.dropbox.com/u/92987/jspy/index.html
+    
 
 */
 
