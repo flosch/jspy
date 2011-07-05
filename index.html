@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<!--
+TODO:
+- Drag&Drop functionality for .pyc files
+-->
+<html>
+    <head>
+        <title>JS/Python</title>
+        
+        <style type="text/css" media="screen">
+            #console {
+                font-family: monospace;
+                padding: 5px;
+                background-color: black;
+                color: #00FF13;
+            }
+            #download {
+                font-size: 90%;
+            }
+            #stop {
+                border: 2px solid red;
+                padding: 2px;
+                display: none;
+            }
+        </style>
+        
+        <script src="python.js" type="text/javascript"
+            charset="utf-8"></script>
+        
+        <script src="modules.js" type="text/javascript"
+            charset="utf-8"></script>
+        
+        <script type="text/javascript" charset="utf-8">
+            var jspy;
+
+            function loadjspy(fn) {
+                jspy = new JSPython({
+                    canvas: 'console',
+                    debug: true
+                    //max_instructions: 2500 //0000
+                });
+                
+                // register my own module webby (see modules.js)
+                jspy.register_jsmodule('webby', new PyModWebby());
+                
+                // load pyc synchroniously
+                jspy.load('files/' + fn + '.pyc');
+                
+                // callback when finished 
+                jspy.onfinished = function() {
+                    document.getElementById('stop').style.display = 'none';
+                }
+                
+                // callback when an error occurred
+                jspy.onerror = function() {
+                    // TODO XXX
+                }
+                
+                document.getElementById('stop').style.display = 'inline';
+                
+                // and go!
+                jspy.run();
+                
+                document.getElementById('download').innerHTML= '<em>Download'+
+                    ' of program source: <a href="files/'+ fn + '.py">' + fn +
+                    '.py</a></em>';
+            }
+            
+            function stopvm() {
+                jspy.stop();
+            }
+        </script>
+    </head>
+    <body>
+        <p>
+            <strong>Choose the app:</strong> 
+            <a href="javascript:loadjspy('fibo');">Fibonacci</a> - 
+            <a href="javascript:loadjspy('whattime');">What time is it?</a> - 
+            <a href="javascript:loadjspy('looping');">Looping</a> -
+            <a href="javascript:loadjspy('prime');">Primes</a> - 
+            <a href="javascript:loadjspy('pi');">Pi</a> - 
+            <a href="javascript:loadjspy('js');">JS from Python</a> -
+            <a href="javascript:loadjspy('storage');">Storage</a> -
+            <a href="javascript:loadjspy('unittest');">Unittest</a> -
+            <a href="javascript:loadjspy('tester');">Dev-Test</a>
+            
+            <span id="stop"><a href="javascript:stopvm();">
+                <strong>Halt</strong></a></span>
+            
+            <span id="download"></span>
+        </p>
+        <div id="console">Choose a file to run...</div>
+        <p style="font-size: 75%;">&copy; 2011 
+            <a href="http://www.fs-tools.de">Florian Schlachter</a> -
+            <a href="about.html">About JS/Python</a> -
+            <a href="https://github.com/flosch/jspy">JS/Python on GitHub</a>
+        </p>
+    </body>
+</html>
