@@ -1,39 +1,5 @@
-<!--
-    JS/Python
-
-    (C) 2011 Florian Schlachter, Berlin
-    All rights reserved.
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions
-    are met:
-    1. Redistributions of source code must retain the above copyright
-       notice, this list of conditions and the following disclaimer.
-    2. Redistributions in binary form must reproduce the above copyright
-       notice, this list of conditions and the following disclaimer in the
-       documentation and/or other materials provided with the distribution.
-    3. The name of the author may not be used to endorse or promote products
-       derived from this software without specific prior written permission.
-
-    THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
-    IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-    OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-    IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
-    INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-    NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-    DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-    THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-    THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
--->
 <!DOCTYPE html>
-<!--
-TODO:
-- Drag&Drop functionality for .pyc files
--->
-<html>
-    <head>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=US-ASCII"><meta http-equiv="Access-Control-Allow-Origin" content="*" />
         <title>JS/Python</title>
         
         <style type="text/css" media="screen">
@@ -52,54 +18,55 @@ TODO:
                 display: none;
             }
         </style>
+        <script src="python.js" type="text/javascript" charset="utf-8"></script>--><style type="text/css"></style><style type="text/css"></style>
         
-        <script src="python.js" type="text/javascript"
-            charset="utf-8"></script>
-        
-        <script src="modules.js" type="text/javascript"
-            charset="utf-8"></script>
+        <script src="modules.js" type="text/javascript" charset="utf-8"></script>
         
         <script type="text/javascript" charset="utf-8">
             var jspy;
-
+            //var myBuffer; // used for debugging
+            
             function loadjspy(fn) {
                 jspy = new JSPython({
                     canvas: 'console',
-                    debug: true
-                    //max_instructions: 2500 //0000
+                    debug: false
+                    //max_instructions: 25000000
                 });
                 
                 // register my own module webby (see modules.js)
                 jspy.register_jsmodule('webby', new PyModWebby());
                 
-                // load pyc synchroniously
-                jspy.load('files/' + fn + '.pyc');
+                // load pyc asynchroniously
+                var loadFile = jspy.load('files/' + fn + '.pyc');
                 
-                // callback when finished 
-                jspy.onfinished = function() {
-                    document.getElementById('stop').style.display = 'none';
+                while (0) { // because async
+                    if (loadFile.loadState) { // if finished loading
+                        // callback when finished 
+                        jspy.onfinished = function() {
+                        document.getElementById('stop').style.display = 'none';
+                        }
+                
+                        // callback when an error occurred
+                        jspy.onerror = function() {
+                            // TODO XXX
+                        }
+                
+                        document.getElementById('stop').style.display = 'inline';
+                
+                        // and go!
+                        jspy.run();
+                
+                        document.getElementById('download').innerHTML= '<em>Download'+
+                            ' of program source: <a href="files/'+ fn + '.py">' + fn +
+                            '.py</a></em>'; 
+                    } 
                 }
-                
-                // callback when an error occurred
-                jspy.onerror = function() {
-                    // TODO XXX
-                }
-                
-                document.getElementById('stop').style.display = 'inline';
-                
-                // and go!
-                jspy.run();
-                
-                document.getElementById('download').innerHTML= '<em>Download'+
-                    ' of program source: <a href="files/'+ fn + '.py">' + fn +
-                    '.py</a></em>';
             }
             
             function stopvm() {
                 jspy.stop();
             }
         </script>
-    </head>
     <body>
         <p>
             <strong>Choose the app:</strong> 
@@ -107,22 +74,18 @@ TODO:
             <a href="javascript:loadjspy('whattime');">What time is it?</a> - 
             <a href="javascript:loadjspy('looping');">Looping</a> -
             <a href="javascript:loadjspy('prime');">Primes</a> - 
-            <a href="javascript:loadjspy('pi');">Pi</a> - 
             <a href="javascript:loadjspy('js');">JS from Python</a> -
-            <a href="javascript:loadjspy('storage');">Storage</a> -
-            <a href="javascript:loadjspy('unittest');">Unittest</a> -
-            <a href="javascript:loadjspy('tester');">Dev-Test</a>
+            <a href="javascript:loadjspy('storage');">Storage</a>
             
             <span id="stop"><a href="javascript:stopvm();">
                 <strong>Halt</strong></a></span>
             
             <span id="download"></span>
         </p>
-        <div id="console">Choose a file to run...</div>
-        <p style="font-size: 75%;">&copy; 2011 
-            <a href="http://www.fs-tools.de">Florian Schlachter</a> -
-            <a href="about.html">About JS/Python</a> -
-            <a href="https://github.com/flosch/jspy">JS/Python on GitHub</a>
+        <div id="console">Choose a file to run... <br></div>
+        <p style="font-size: 75%;">© 2011 
+            <a href="http://www.fs-tools.de/">Florian Schlachter</a> - <a href="http://dl.dropbox.com/u/92987/jspy/about.html">About JS/Python</a> - <a href="https://github.com/flosch/jspy">JS/Python on GitHub</a>
         </p>
-    </body>
-</html>
+    
+
+<div id="ytCinemaMessage" style="display: none;"></div></body></html>
