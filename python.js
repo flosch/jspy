@@ -81,8 +81,8 @@ function BufferStream(buffer) {
         for (i=0; i<buffer.length;i++)
             this.buffer[i] = ord(buffer[i]);
     }
-    else
-        this.buffer = new Uint8Array(buffer);
+    else {
+        this.buffer = new Uint8Array(buffer); }
 }
 BufferStream.prototype.getByte = function(offset) {
     return this.buffer[offset];
@@ -1164,32 +1164,46 @@ JSPython.prototype.load = function(fn) {
     
     this.console.println('Loading ' + fn + '...');
     
-    xmlHttp.open('GET', fn); /* Must be async */
+    xmlHttp.open('GET', fn, true); /* Must be async */
     xmlHttp.setRequestHeader('Cache-Control', 'no-cache');
     xmlHttp.responseType = 'arraybuffer';
-    xmlHttp.mozResponseType = 'arraybuffer';
+    //xmlHttp.mozResponseType = 'arraybuffer'; // deprecated
     xmlHttp.send(null);
-
-    tmpBuffer = new BufferStream(xmlHttp.mozResponseArrayBuffer ?
-        xmlHttp.mozResponseArrayBuffer : xmlHttp.response);
-
-    // Do some prechecks (magic, timestamp) & read them
     
-    // hard-coded magic
-    magic = tmpBuffer.getDWord(0);
-    if (magic != 168686339) {
-        this.console.println('No valid compiled pythonfile (maybe not a' + 
-                             ' Python 2.7.2 file?).');
-        return;
-    }
+    (function (doc) { // this-Object can't accessed in so deep
+        xmlHttp.onreadystatechange = function () { // if async file loaded
+            if (xmlHttp.readyState == 4) {
+                //myBuffer = xmlHttp.response;
+                //console.log(xmlHttp.response);
+            
+                
+                // Do some prechecks (magic, timestamp) & read them
+                tmpBuffer = new BufferStream(xmlHttp.response);
+                //tmpBuffer = new BufferStream(xmlHttp.mozResponseArrayBuffer ? 
+                //    xmlHttp.mozResponseArrayBuffer : xmlHttp.response); // deprecated
+                
+                //console.log(tmpBuffer);
+                // hard-coded magic
+                magic = tmpBuffer.getDWord(0);
+                if (magic != 168686339) {
+                    doc.console.println('No valid compiled pythonfile (maybe not a' + 
+                                     ' Python 2.7.2 file?).');
+                    return;
+                }
     
-    // timestamp
-    timestamp = tmpBuffer.getDWord(4);
-    this.console.println('- File created ' + new Date(timestamp * 1000));
+                // timestamp
+                timestamp = tmpBuffer.getDWord(4);
+                doc.console.println('- File created ' + new Date(timestamp * 1000));
+        
+                // Go parsing...
+                doc.console.println('- OK, parsing now. Wish me luck...');
+                doc.parse(tmpBuffer);
     
-    // Go parsing...
-    this.console.println('- OK, parsing now. Wish me luck...');
-    this.parse(tmpBuffer);
+    
+            }
+        }
+    })(this); // run immediately
+    return { "loadState":true };
 };
 
 JSPython.prototype.parse = function(code) {
@@ -1201,7 +1215,7 @@ JSPython.prototype.parse = function(code) {
     // Unmarshal raw code and build entrypoint
     m = new Marshal({buffer: code});
     this.entrypoint = m.parse();
-
+    console.log(this.entrypoint);
     this.console.println('- Hoooray, parsing done!');
 };
     
@@ -1209,6 +1223,7 @@ JSPython.prototype.run = function() {
     // Check for entrypoint
     if (!this.entrypoint) {
         this.console.println('No entrypoint found, can not start.');
+        console.log("fail");
         return;
     }
     
