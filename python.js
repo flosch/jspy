@@ -1164,7 +1164,7 @@ JSPython.prototype.load = function(fn) {
     
     this.console.println('Loading ' + fn + '...');
     
-    xmlHttp.open('GET', fn, false);
+    xmlHttp.open('GET', fn); /* Must be async */
     xmlHttp.setRequestHeader('Cache-Control', 'no-cache');
     xmlHttp.responseType = 'arraybuffer';
     xmlHttp.mozResponseType = 'arraybuffer';

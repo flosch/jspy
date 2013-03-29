@@ -72,7 +72,7 @@ TODO:
                 // register my own module webby (see modules.js)
                 jspy.register_jsmodule('webby', new PyModWebby());
                 
-                // load pyc synchroniously
+                // load pyc asynchroniously
                 jspy.load('files/' + fn + '.pyc');
                 
                 // callback when finished 
